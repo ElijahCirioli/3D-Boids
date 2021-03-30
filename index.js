@@ -199,7 +199,7 @@ const animate = () => {
 		b.move();
 	}
 
-	/* check if inside tank */
+	/* check if camera is inside tank */
 	water.material.side = THREE.FrontSide;
 	const raycaster = new THREE.Raycaster();
 	raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
