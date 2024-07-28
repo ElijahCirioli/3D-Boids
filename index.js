@@ -23,6 +23,7 @@ const RAN_WEIGHT = 0.01; //how much the boid goes in a random direction
 const INERTIA = 0.01; //the proportion with which the rules should affect the current speed
 
 let boids, bounds, water, t;
+let lastTime = Date.now();
 
 class Boid {
 	constructor(pos, vel, green) {
@@ -46,7 +47,7 @@ class Boid {
 		this.updateShape();
 	}
 
-	move() {
+	move(deltaTime) {
 		/* create neighborhood */
 		this.neighborhood = [];
 		for (const b of boids) {
@@ -65,7 +66,9 @@ class Boid {
 		/* add rules to current velocity and update position */
 		this.vel.add(deltaV);
 		this.vel.clampLength(SPEED, SPEED);
-		this.pos.add(this.vel);
+		const scaledVel = this.vel.clone();
+		scaledVel.multiplyScalar((deltaTime * 60) / 1000);
+		this.pos.add(scaledVel);
 		this.pos.clamp(bounds.min, bounds.max);
 		this.updateShape(); //update THREE.js shape
 	}
@@ -193,10 +196,12 @@ const init = () => {
 
 const animate = () => {
 	requestAnimationFrame(animate);
+	const deltaTime = Date.now() - lastTime;
+	lastTime = Date.now();
 
 	/* move all boids */
 	for (const b of boids) {
-		b.move();
+		b.move(deltaTime);
 	}
 
 	/* check if camera is inside tank */
